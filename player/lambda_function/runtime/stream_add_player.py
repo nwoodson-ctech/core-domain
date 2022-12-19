@@ -3,6 +3,7 @@ import json
 
 def handler(event, context):
     print(event[0])
+
     for payload in event:
         result = {
             "statusCode": 200,
