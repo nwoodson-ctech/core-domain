@@ -1,9 +1,9 @@
-from constructs import Construct
 from aws_cdk import (
     Stack,
     pipelines as pipelines,
     SecretValue
 )
+from constructs import Construct
 
 from event_bridge.infrastructure.core_event_bridge_stage import CoreEventBridgeStage
 from player.lambda_function.infrastructure.stream_add_player_stage import StreamAddPlayerStage
@@ -37,10 +37,10 @@ class PipelineStack(Stack):
 
         deploy_core_event_bridge = CoreEventBridgeStage(
             self, "DeployCoreEventBridge")
-        deploy_core_event_bridge_stage = code_pipeline.add_stage(
+        code_pipeline.add_stage(
             deploy_core_event_bridge)
 
         deploy_stream_add_player = StreamAddPlayerStage(
             self, "DeployStreamAddPlayer")
-        deploy_stream_add_player_stage = code_pipeline.add_stage(
+        code_pipeline.add_stage(
             deploy_stream_add_player)

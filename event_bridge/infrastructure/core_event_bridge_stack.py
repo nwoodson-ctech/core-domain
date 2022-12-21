@@ -1,13 +1,10 @@
-from constructs import Construct
 from aws_cdk import (
     Stack,
     aws_events as events,
     aws_events_targets as target,
-    aws_lambda as _lambda,
-    Duration,
-    aws_iam as iam
+    Duration
 )
-import os
+from constructs import Construct
 
 
 class CoreEventBridgeStack(Stack):
@@ -31,54 +28,30 @@ class CoreEventBridgeStack(Stack):
                                retention=Duration.days(1)
                                )
 
-        ### Creating Change Team Rule in Infrastructure, not sure if this ###
-        ### should live somewhere else in the package structure ###
-        change_team_rule = events.Rule(self, "change-team-rule",
-                                       event_bus=core_event_bus,
-                                       event_pattern=events.EventPattern(
-                                           source=["ingest-api"],
-                                           detail_type=["team"],
-                                           detail={
-                                               "eventName": ["ChangeTeamName"]
-                                           },
-                                       )
-                                       )
-
-        change_team_rule.add_target(target.EventBus(
-            events.EventBus.from_event_bus_arn(self,
-                                               "team-event-bus",
-                                               "arn:aws:events:us-east-1:{}:event-bus/TeamEventBus".format(os.getenv(
-                                                   'CDK_DEFAULT_ACCOUNT')))))
-
-        ### Creating Change Player Rule in Infrastructure, not sure if this ###
-        ### should live somewhere else in the package structure ###
-        change_player_rule = events.Rule(self, "change-player-rule",
-                                         event_bus=core_event_bus,
-                                         event_pattern=events.EventPattern(
-                                             source=["ingest-api"],
-                                             detail_type=["player"],
-                                             detail={
-                                                 "eventName": ["ChangePlayerName"]
-                                             },
-                                         )
-                                         )
-
-        change_player_rule.add_target(target.EventBus(
-            events.EventBus.from_event_bus_arn(self,
-                                               "player-event-bus",
-                                               "arn:aws:events:us-east-1:{}:event-bus/PlayerEventBus".format(os.getenv(
-                                                   'CDK_DEFAULT_ACCOUNT')))))
-
         add_player_rule = events.Rule(self, "add-player-rule",
                                       event_bus=core_event_bus,
                                       event_pattern=events.EventPattern(
-                                            source=["ingest-api"],
-                                            detail_type=["player"],
-                                            detail={
-                                                "eventName": ["AddPlayer"]
-                                            }
+                                          source=["ingest-api"],
+                                          detail_type=["player"],
+                                          detail={
+                                              "eventName": ["AddPlayer"]
+                                          }
                                       )
                                       )
 
         add_player_rule.add_target(target.EventBus(events.EventBus.from_event_bus_name(
             self, "add-player-event-bus", "PlayerEventBus")))
+
+        save_player_rule = events.Rule(self, "save-player-rule",
+                                      event_bus=core_event_bus,
+                                      event_pattern=events.EventPattern(
+                                          source=["ingest-api"],
+                                          detail_type=["player"],
+                                          detail={
+                                              "eventName": ["SavePlayer"]
+                                          }
+                                      )
+                                      )
+
+        save_player_rule.add_target(target.EventBus(events.EventBus.from_event_bus_name(
+            self, "save-player-event", "PlayerEventBus")))
