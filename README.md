@@ -56,3 +56,7 @@ command.
  * `cdk docs`        open CDK documentation
 
 Enjoy!
+
+## Event Bridge
+Event Bridge is used to create a main Event Bus to orchestrate / set up conneections
+with various TGL domain specific Event Buses downstream. 

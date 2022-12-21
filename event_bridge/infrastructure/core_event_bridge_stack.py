@@ -28,30 +28,13 @@ class CoreEventBridgeStack(Stack):
                                retention=Duration.days(1)
                                )
 
-        add_player_rule = events.Rule(self, "add-player-rule",
-                                      event_bus=core_event_bus,
-                                      event_pattern=events.EventPattern(
-                                          source=["ingest-api"],
-                                          detail_type=["player"],
-                                          detail={
-                                              "eventName": ["AddPlayer"]
-                                          }
-                                      )
-                                      )
+        player_event_bus_rule = events.Rule(self, "add-player-rule",
+                                            event_bus=core_event_bus,
+                                            event_pattern=events.EventPattern(
+                                                source=["ingest-api"],
+                                                detail_type=["player"]
+                                            )
+                                            )
 
-        add_player_rule.add_target(target.EventBus(events.EventBus.from_event_bus_name(
-            self, "add-player-event-bus", "PlayerEventBus")))
-
-        save_player_rule = events.Rule(self, "save-player-rule",
-                                      event_bus=core_event_bus,
-                                      event_pattern=events.EventPattern(
-                                          source=["ingest-api"],
-                                          detail_type=["player"],
-                                          detail={
-                                              "eventName": ["SavePlayer"]
-                                          }
-                                      )
-                                      )
-
-        save_player_rule.add_target(target.EventBus(events.EventBus.from_event_bus_name(
-            self, "save-player-event", "PlayerEventBus")))
+        player_event_bus_rule.add_target(target.EventBus(events.EventBus.from_event_bus_name(
+            self, "route-to-player-event-bus", "PlayerEventBus")))
